@@ -617,7 +617,10 @@ async def edit_bot_settings(client, query):
         await query.answer()
         await update_buttons(message, data[2], data[1])
         pfunc = partial(
-            edit_nzb_server, pre_message=message, key=data[2], index=index
+            edit_nzb_server,
+            pre_message=message,
+            key=data[2],
+            index=index,
         )
         rfunc = partial(update_buttons, message, data[1])
         await event_handler(client, query, pfunc, rfunc)

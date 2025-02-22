@@ -12,7 +12,8 @@ class SabnzbdSession(AsyncClient):
     @wraps(AsyncClient.request)
     async def request(self, method: str, url: str, **kwargs):
         kwargs.setdefault(
-            "timeout", Timeout(connect=30, read=60, write=60, pool=None)
+            "timeout",
+            Timeout(connect=30, read=60, write=60, pool=None),
         )
         kwargs.setdefault("follow_redirects", True)
         return await super().request(method, url, **kwargs)

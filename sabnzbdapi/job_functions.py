@@ -396,7 +396,7 @@ class JobFunctions(SubFunctions):
     async def retry_item(self, nzo_id: str, password: str = ""):
         """return {"status": True}"""
         return await self.call(
-            {"mode": "retry", "value": nzo_id, "password": password}
+            {"mode": "retry", "value": nzo_id, "password": password},
         )
 
     async def retry_all(self):
@@ -423,13 +423,13 @@ class JobFunctions(SubFunctions):
     async def change_job_pp(self, nzo_id: str, pp: int):
         """return {"status": True}"""
         return await self.call(
-            {"mode": "change_opts", "value": nzo_id, "value2": pp}
+            {"mode": "change_opts", "value": nzo_id, "value2": pp},
         )
 
     async def set_speedlimit(self, limit: str | int):
         """return {"status": True}"""
         return await self.call(
-            {"mode": "config", "name": "speedlimit", "value": limit}
+            {"mode": "config", "name": "speedlimit", "value": limit},
         )
 
     async def delete_config(self, section: str, keyword: str):
@@ -443,7 +443,9 @@ class JobFunctions(SubFunctions):
         return await self.call({"mode": "set_config_default", "keyword": keyword})
 
     async def get_config(
-        self, section: str | None = None, keyword: str | None = None
+        self,
+        section: str | None = None,
+        keyword: str | None = None,
     ):
         """return config as dic"""
         return await self.call(

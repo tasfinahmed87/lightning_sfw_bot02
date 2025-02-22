@@ -27,7 +27,8 @@ class SubFunctions:
 
     async def create_category(self, name: str, dir: str):
         return await self.set_special_config(
-            "categories", {"name": name, "dir": dir}
+            "categories",
+            {"name": name, "dir": dir},
         )
 
     async def delete_category(self, name: str):
