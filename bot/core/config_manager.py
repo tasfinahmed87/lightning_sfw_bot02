@@ -120,7 +120,7 @@ class Config:
                         try:
                             if not value[0].get("host"):
                                 continue
-                        except:
+                        except Exception:
                             continue
                     setattr(cls, attr, value)
 
@@ -144,7 +144,7 @@ class Config:
                     try:
                         if not value[0].get("host"):
                             value = []
-                    except:
+                    except Exception:
                         value = []
                 setattr(cls, key, value)
 

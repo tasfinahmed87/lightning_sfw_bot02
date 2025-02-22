@@ -79,7 +79,7 @@ async def select(_, message):
                         f"{e} Error in pause, this mostly happens after abuse aria2",
                     )
         task.listener.select = True
-    except:
+    except Exception:
         await send_message(message, "This is not a bittorrent or sabnzbd task!")
         return
 

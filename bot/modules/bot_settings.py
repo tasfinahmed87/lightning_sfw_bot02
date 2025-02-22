@@ -20,6 +20,7 @@ from bot import (
     auth_chats,
     drives_ids,
     drives_names,
+    LOGGER,
     excluded_extensions,
     index_urls,
     intervals,
@@ -295,7 +296,7 @@ async def edit_nzb_server(_, message, pre_message, key, index=0):
         if value.startswith("{") and value.endswith("}"):
             try:
                 value = eval(value)
-            except:
+            except Exception:
                 await send_message(message, "Invalid dict format!")
                 await update_buttons(pre_message, "nzbserver")
                 return

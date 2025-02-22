@@ -11,7 +11,9 @@ from aioqbt.client import create_client
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
+from sabnzbdapi import SabnzbdClient
 
+from aioaria2 import Aria2HttpClient
 from web.nodes import extract_file_ids, make_tree
 
 getLogger("httpx").setLevel(WARNING)
@@ -19,10 +21,14 @@ getLogger("aiohttp").setLevel(WARNING)
 
 aria2 = None
 qbittorrent = None
-
+sabnzbd_client = SabnzbdClient(
+    host="http://localhost",
+    api_key="mltb",
+    port="8070",
+)
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(_: FastAPI):
     global aria2, qbittorrent
     aria2 = Aria2HttpClient("http://localhost:6800/jsonrpc")
     qbittorrent = await create_client("http://localhost:8090/api/v2/")
