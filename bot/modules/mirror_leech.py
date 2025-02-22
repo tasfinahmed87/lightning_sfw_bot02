@@ -23,8 +23,6 @@ from bot.helper.ext_utils.links_utils import (
     is_telegram_link,
     is_url,
 )
-from ..helper.mirror_leech_utils.download_utils.nzb_downloader import add_nzb
-
 from bot.helper.listeners.task_listener import TaskListener
 from bot.helper.mirror_leech_utils.download_utils.aria2_download import (
     add_aria2_download,
@@ -37,6 +35,7 @@ from bot.helper.mirror_leech_utils.download_utils.direct_link_generator import (
 )
 from bot.helper.mirror_leech_utils.download_utils.gd_download import add_gd_download
 from bot.helper.mirror_leech_utils.download_utils.jd_download import add_jd_download
+from bot.helper.mirror_leech_utils.download_utils.nzb_downloader import add_nzb
 from bot.helper.mirror_leech_utils.download_utils.qbit_download import add_qb_torrent
 from bot.helper.mirror_leech_utils.download_utils.rclone_download import (
     add_rclone_download,
@@ -444,5 +443,5 @@ async def jd_leech(client, message):
 
 async def nzb_leech(client, message):
     bot_loop.create_task(
-        Mirror(client, message, is_leech=True, is_nzb=True).new_event()
+        Mirror(client, message, is_leech=True, is_nzb=True).new_event(),
     )

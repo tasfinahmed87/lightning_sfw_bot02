@@ -18,21 +18,21 @@ from pyrogram.handlers import MessageHandler
 
 from bot import (
     auth_chats,
-    sabnzbd_client,
-    nzb_options,
     drives_ids,
     drives_names,
     excluded_extensions,
     index_urls,
     intervals,
     jd_listener_lock,
+    nzb_options,
+    sabnzbd_client,
     sudo_users,
     task_dict,
 )
 from bot.core.aeon_client import TgClient
 from bot.core.config_manager import Config
 from bot.core.jdownloader_booter import jdownloader
-from bot.core.startup import update_variables, update_nzb_options
+from bot.core.startup import update_nzb_options, update_variables
 from bot.core.torrent_manager import TorrentManager
 from bot.helper.ext_utils.bot_utils import SetInterval, new_task
 from bot.helper.ext_utils.db_handler import database
@@ -142,7 +142,9 @@ Timeout: 60 sec"""
         buttons.data_button("Close", "botset close")
         for x in range(0, len(nzb_options), 10):
             buttons.data_button(
-                f"{int(x / 10)}", f"botset start nzb {x}", position="footer"
+                f"{int(x / 10)}",
+                f"botset start nzb {x}",
+                position="footer",
             )
         msg = f"Sabnzbd Options | Page: {int(start / 10)} | State: {state}"
     elif key == "nzbserver":
@@ -155,7 +157,9 @@ Timeout: 60 sec"""
         if len(Config.USENET_SERVERS) > 10:
             for x in range(0, len(Config.USENET_SERVERS), 10):
                 buttons.data_button(
-                    f"{int(x / 10)}", f"botset start nzbser {x}", position="footer"
+                    f"{int(x / 10)}",
+                    f"botset start nzbser {x}",
+                    position="footer",
                 )
         msg = f"Usenet Servers | Page: {int(start / 10)} | State: {state}"
     elif key.startswith("nzbser"):
@@ -172,7 +176,9 @@ Timeout: 60 sec"""
         if len(Config.USENET_SERVERS[index].keys()) > 10:
             for x in range(0, len(Config.USENET_SERVERS[index]), 10):
                 buttons.data_button(
-                    f"{int(x / 10)}", f"botset start {key} {x}", position="footer"
+                    f"{int(x / 10)}",
+                    f"botset start {key} {x}",
+                    position="footer",
                 )
         msg = f"Server Keys | Page: {int(start / 10)} | State: {state}"
 
@@ -260,6 +266,7 @@ async def edit_variable(_, message, pre_message, key):
         for s in value:
             await sabnzbd_client.set_special_config("servers", s)
 
+
 @new_task
 async def edit_nzb(_, message, pre_message, key):
     handler_dict[message.chat.id] = False
@@ -307,7 +314,7 @@ async def edit_nzb_server(_, message, pre_message, key, index=0):
         if value.isdigit():
             value = int(value)
         res = await sabnzbd_client.add_server(
-            {"name": Config.USENET_SERVERS[index]["name"], key: value}
+            {"name": Config.USENET_SERVERS[index]["name"], key: value},
         )
         if res["config"]["servers"][0][key] == "":
             await send_message(message, "Invalid value")
@@ -464,7 +471,7 @@ async def edit_bot_settings(client, query):
         )
         await sync_jdownloader()
     elif data[1] in ["var", "nzb", "nzbserver"] or data[1].startswith(
-        "nzbser"
+        "nzbser",
     ):
         if data[1] == "nzbserver":
             globals()["start"] = 0
@@ -535,7 +542,8 @@ async def edit_bot_settings(client, query):
         await database.update_nzb_config()
     elif data[1] == "syncnzb":
         await query.answer(
-            "Syncronization Started. It takes up to 2 sec!", show_alert=True
+            "Syncronization Started. It takes up to 2 sec!",
+            show_alert=True,
         )
         nzb_options.clear()
         await update_nzb_options()
@@ -549,7 +557,8 @@ async def edit_bot_settings(client, query):
     elif data[1] == "remser":
         index = int(data[2])
         await sabnzbd_client.delete_config(
-            "servers", Config.USENET_SERVERS[index]["name"]
+            "servers",
+            Config.USENET_SERVERS[index]["name"],
         )
         del Config.USENET_SERVERS[index]
         await update_buttons(message, "nzbserver")
@@ -591,7 +600,7 @@ async def edit_bot_settings(client, query):
                 out_file.name = f"{data[2]}.txt"
                 await send_file(message, out_file)
             return
-        elif value == "":
+        if value == "":
             value = None
         await query.answer(f"{value}", show_alert=True)
     elif data[1] == "emptyserkey":
@@ -599,7 +608,7 @@ async def edit_bot_settings(client, query):
         await update_buttons(message, f"nzbser{data[2]}")
         index = int(data[2])
         res = await sabnzbd_client.add_server(
-            {"name": Config.USENET_SERVERS[index]["name"], data[3]: ""}
+            {"name": Config.USENET_SERVERS[index]["name"], data[3]: ""},
         )
         Config.USENET_SERVERS[index][data[3]] = res["config"]["servers"][0][data[3]]
         await database.update_config({"USENET_SERVERS": Config.USENET_SERVERS})
@@ -607,7 +616,9 @@ async def edit_bot_settings(client, query):
         index = 0 if data[2] == "newser" else int(data[1].replace("nzbsevar", ""))
         await query.answer()
         await update_buttons(message, data[2], data[1])
-        pfunc = partial(edit_nzb_server, pre_message=message, key=data[2], index=index)
+        pfunc = partial(
+            edit_nzb_server, pre_message=message, key=data[2], index=index
+        )
         rfunc = partial(update_buttons, message, data[1])
         await event_handler(client, query, pfunc, rfunc)
     elif data[1].startswith("nzbsevar") and state == "view":
@@ -619,7 +630,7 @@ async def edit_bot_settings(client, query):
                 out_file.name = f"{data[2]}.txt"
                 await send_file(message, out_file)
             return
-        elif value == "":
+        if value == "":
             value = None
         await query.answer(f"{value}", show_alert=True)
     elif data[1] == "edit":

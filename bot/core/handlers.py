@@ -203,12 +203,12 @@ def add_handlers():
         "nzb_mirror": (
             nzb_mirror,
             BotCommands.NzbMirrorCommand,
-            CustomFilters.authorized
+            CustomFilters.authorized,
         ),
         "nzb_leech": (
             nzb_leech,
             BotCommands.NzbLeechCommand,
-            CustomFilters.authorized
+            CustomFilters.authorized,
         ),
     }
 

@@ -69,8 +69,8 @@ async def main():
         load_configurations,
         save_settings,
         update_aria2_options,
-        update_qb_options,
         update_nzb_options,
+        update_qb_options,
         update_variables,
     )
 

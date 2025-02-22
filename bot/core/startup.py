@@ -8,19 +8,19 @@ from aioshutil import rmtree
 
 from bot import (
     LOGGER,
-    nzb_options,
     aria2_options,
     auth_chats,
     drives_ids,
     drives_names,
     excluded_extensions,
     index_urls,
+    nzb_options,
     qbit_options,
     rss_dict,
+    sabnzbd_client,
     shorteners_list,
     sudo_users,
     user_data,
-    sabnzbd_client,
 )
 from bot.helper.ext_utils.db_handler import database
 
@@ -116,7 +116,8 @@ async def load_settings():
             qbit_options.update(qbit_opt)
 
         if nzb_opt := await database.db.settings.nzb.find_one(
-            {"_id": BOT_ID}, {"_id": 0}
+            {"_id": BOT_ID},
+            {"_id": 0},
         ):
             if await aiopath.exists("sabnzbd/SABnzbd.ini.bak"):
                 await remove("sabnzbd/SABnzbd.ini.bak")
@@ -181,7 +182,9 @@ async def save_settings():
         async with aiopen("sabnzbd/SABnzbd.ini", "rb+") as pf:
             nzb_conf = await pf.read()
         await database.db.settings.nzb.update_one(
-            {"_id": TgClient.ID}, {"$set": {"SABnzbd__ini": nzb_conf}}, upsert=True
+            {"_id": TgClient.ID},
+            {"$set": {"SABnzbd__ini": nzb_conf}},
+            upsert=True,
         )
 
 

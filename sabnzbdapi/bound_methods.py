@@ -1,5 +1,4 @@
 class SubFunctions:
-
     async def check_login(self):
         res = await self.get_config("servers")
         return res["config"] or False
@@ -27,7 +26,9 @@ class SubFunctions:
         return await self.set_special_config("servers", server)
 
     async def create_category(self, name: str, dir: str):
-        return await self.set_special_config("categories", {"name": name, "dir": dir})
+        return await self.set_special_config(
+            "categories", {"name": name, "dir": dir}
+        )
 
     async def delete_category(self, name: str):
         return await self.delete_config("categories", name)

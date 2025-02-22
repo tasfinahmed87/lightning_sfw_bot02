@@ -7,7 +7,7 @@ from aiofiles import open as aiopen
 from aiofiles.os import path as aiopath
 from aiofiles.os import remove
 
-from bot import LOGGER, intervals, scheduler, sabnzbd_client
+from bot import LOGGER, intervals, sabnzbd_client, scheduler
 from bot.core.aeon_client import TgClient
 from bot.core.config_manager import Config
 from bot.core.jdownloader_booter import jdownloader

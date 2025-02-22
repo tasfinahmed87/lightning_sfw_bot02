@@ -1,24 +1,17 @@
 import contextlib
-from aiofiles.os import remove, path as aiopath
 
-from .. import (
-    task_dict,
-    task_dict_lock,
-    user_data,
-    LOGGER,
-    sabnzbd_client,
-)
-from ..core.config_manager import Config
-from ..core.torrent_manager import TorrentManager
-from ..helper.ext_utils.bot_utils import (
-    bt_selection_buttons,
-    new_task,
-)
-from ..helper.ext_utils.status_utils import get_task_by_gid, MirrorStatus
-from ..helper.telegram_helper.message_utils import (
+from aiofiles.os import path as aiopath
+from aiofiles.os import remove
+
+from bot import LOGGER, sabnzbd_client, task_dict, task_dict_lock, user_data
+from bot.core.config_manager import Config
+from bot.core.torrent_manager import TorrentManager
+from bot.helper.ext_utils.bot_utils import bt_selection_buttons, new_task
+from bot.helper.ext_utils.status_utils import MirrorStatus, get_task_by_gid
+from bot.helper.telegram_helper.message_utils import (
+    delete_message,
     send_message,
     send_status_message,
-    delete_message,
 )
 
 
@@ -50,10 +43,8 @@ async def select(_, message):
         await send_message(message, msg)
         return
 
-    if (
-        Config.OWNER_ID != user_id
-        and task.listener.user_id != user_id
-        and (user_id not in user_data or not user_data[user_id].get("SUDO"))
+    if user_id not in (Config.OWNER_ID, task.listener.user_id) and (
+        user_id not in user_data or not user_data[user_id].get("SUDO")
     ):
         await send_message(message, "This task is not for you!")
         return
@@ -85,7 +76,7 @@ async def select(_, message):
                     await TorrentManager.aria2.forcePause(id_)
                 except Exception as e:
                     LOGGER.error(
-                        f"{e} Error in pause, this mostly happens after abuse aria2"
+                        f"{e} Error in pause, this mostly happens after abuse aria2",
                     )
         task.listener.select = True
     except:
@@ -141,7 +132,7 @@ async def confirm_selection(_, query):
                         await TorrentManager.aria2.unpause(id_)
                     except Exception as e:
                         LOGGER.error(
-                            f"{e} Error in resume, this mostly happens after abuse aria2. Try to use select cmd again!"
+                            f"{e} Error in resume, this mostly happens after abuse aria2. Try to use select cmd again!",
                         )
         elif task.listener.is_nzb:
             await sabnzbd_client.resume_job(id_)

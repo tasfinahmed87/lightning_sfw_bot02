@@ -19,11 +19,12 @@ from logging import (
     getLogger,
 )
 from time import time
-from sabnzbdapi import SabnzbdClient
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pytz import timezone
 from uvloop import install
+
+from sabnzbdapi import SabnzbdClient
 
 getLogger("requests").setLevel(WARNING)
 getLogger("urllib3").setLevel(WARNING)
@@ -115,16 +116,23 @@ sabnzbd_client = SabnzbdClient(
     port="8070",
 )
 subprocess.run(["xnox", "-d", f"--profile={os.getcwd()}"], check=False)
-subprocess.run([
-    "xnzb", 
-    "-f", "sabnzbd/SABnzbd.ini", 
-    "-s", ":::8070", 
-    "-b", "0", 
-    "-d", 
-    "-c", 
-    "-l", "0", 
-    "--console"
-], check=False)
+subprocess.run(
+    [
+        "xnzb",
+        "-f",
+        "sabnzbd/SABnzbd.ini",
+        "-s",
+        ":::8070",
+        "-b",
+        "0",
+        "-d",
+        "-c",
+        "-l",
+        "0",
+        "--console",
+    ],
+    check=False,
+)
 
 
 scheduler = AsyncIOScheduler(event_loop=bot_loop)
