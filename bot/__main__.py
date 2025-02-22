@@ -70,6 +70,7 @@ async def main():
         save_settings,
         update_aria2_options,
         update_qb_options,
+        update_nzb_options,
         update_variables,
     )
 
@@ -81,6 +82,7 @@ async def main():
     await gather(
         update_qb_options(),
         update_aria2_options(),
+        update_nzb_options(),
     )
     from .core.jdownloader_booter import jdownloader
     from .helper.ext_utils.files_utils import clean_all

@@ -23,6 +23,8 @@ from bot.helper.ext_utils.links_utils import (
     is_telegram_link,
     is_url,
 )
+from ..helper.mirror_leech_utils.download_utils.nzb_downloader import add_nzb
+
 from bot.helper.listeners.task_listener import TaskListener
 from bot.helper.mirror_leech_utils.download_utils.aria2_download import (
     add_aria2_download,
@@ -58,6 +60,7 @@ class Mirror(TaskListener):
         is_qbit=False,
         is_leech=False,
         is_jd=False,
+        is_nzb=False,
         same_dir=None,
         bulk=None,
         multi_tag=None,
@@ -77,6 +80,7 @@ class Mirror(TaskListener):
         self.is_qbit = is_qbit
         self.is_leech = is_leech
         self.is_jd = is_jd
+        self.is_nzb = is_nzb
 
     async def new_event(self):
         text = self.message.text.split("\n")
@@ -271,6 +275,7 @@ class Mirror(TaskListener):
                 self.is_qbit,
                 self.is_leech,
                 self.is_jd,
+                self.is_nzb,
                 self.same_dir,
                 self.bulk,
                 self.multi_tag,
@@ -350,6 +355,7 @@ class Mirror(TaskListener):
         if (
             not self.is_jd
             and not self.is_qbit
+            and not self.is_nzb
             and not is_magnet(self.link)
             and not is_rclone_path(self.link)
             and not is_gdrive_link(self.link)
@@ -397,6 +403,8 @@ class Mirror(TaskListener):
             create_task(add_jd_download(self, path))
         elif self.is_qbit:
             create_task(add_qb_torrent(self, path, ratio, seed_time))
+        elif self.is_nzb:
+            create_task(add_nzb(self, path))
         elif is_rclone_path(self.link):
             create_task(add_rclone_download(self, f"{path}/"))
         elif is_gdrive_link(self.link) or is_gdrive_id(self.link):
@@ -424,7 +432,17 @@ async def jd_mirror(client, message):
     bot_loop.create_task(Mirror(client, message, is_jd=True).new_event())
 
 
+async def nzb_mirror(client, message):
+    bot_loop.create_task(Mirror(client, message, is_nzb=True).new_event())
+
+
 async def jd_leech(client, message):
     bot_loop.create_task(
         Mirror(client, message, is_leech=True, is_jd=True).new_event(),
+    )
+
+
+async def nzb_leech(client, message):
+    bot_loop.create_task(
+        Mirror(client, message, is_leech=True, is_nzb=True).new_event()
     )

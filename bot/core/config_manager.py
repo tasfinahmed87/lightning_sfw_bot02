@@ -51,6 +51,7 @@ class Config:
     TORRENT_TIMEOUT: int = 0
     UPLOAD_PATHS = {}
     UPSTREAM_REPO: str = ""
+    USENET_SERVERS = []
     UPSTREAM_BRANCH: str = "main"
     USER_SESSION_STRING: str = ""
     USER_TRANSMISSION: bool = False
@@ -115,6 +116,12 @@ class Config:
                         and value
                     ):
                         value = value.strip("/")
+                    elif attr == "USENET_SERVERS":
+                        try:
+                            if not value[0].get("host"):
+                                continue
+                        except:
+                            continue
                     setattr(cls, attr, value)
 
     @classmethod
@@ -133,6 +140,12 @@ class Config:
                     and value
                 ):
                     value = value.strip("/")
+                elif key == "USENET_SERVERS":
+                    try:
+                        if not value[0].get("host"):
+                            value = []
+                    except:
+                        value = []
                 setattr(cls, key, value)
 
 

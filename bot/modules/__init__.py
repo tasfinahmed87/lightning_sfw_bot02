@@ -16,6 +16,8 @@ from .mirror_leech import (
     jd_mirror,
     leech,
     mirror,
+    nzb_leech,
+    nzb_mirror,
 )
 from .restart import (
     confirm_restart,
@@ -70,6 +72,8 @@ __all__ = [
     "log",
     "mediainfo",
     "mirror",
+    "nzb_leech",
+    "nzb_mirror",
     "ping",
     "remove_from_queue",
     "remove_sudo",

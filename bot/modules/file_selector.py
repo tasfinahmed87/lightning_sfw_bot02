@@ -1,17 +1,24 @@
 import contextlib
+from aiofiles.os import remove, path as aiopath
 
-from aiofiles.os import path as aiopath
-from aiofiles.os import remove
-
-from bot import LOGGER, task_dict, task_dict_lock, user_data
-from bot.core.config_manager import Config
-from bot.core.torrent_manager import TorrentManager
-from bot.helper.ext_utils.bot_utils import bt_selection_buttons, new_task
-from bot.helper.ext_utils.status_utils import MirrorStatus, get_task_by_gid
-from bot.helper.telegram_helper.message_utils import (
-    delete_message,
+from .. import (
+    task_dict,
+    task_dict_lock,
+    user_data,
+    LOGGER,
+    sabnzbd_client,
+)
+from ..core.config_manager import Config
+from ..core.torrent_manager import TorrentManager
+from ..helper.ext_utils.bot_utils import (
+    bt_selection_buttons,
+    new_task,
+)
+from ..helper.ext_utils.status_utils import get_task_by_gid, MirrorStatus
+from ..helper.telegram_helper.message_utils import (
     send_message,
     send_status_message,
+    delete_message,
 )
 
 
@@ -37,14 +44,16 @@ async def select(_, message):
     elif len(msg) == 1:
         msg = (
             "Reply to an active /cmd which was used to start the download or add gid along with cmd\n\n"
-            + "This command mainly for selection incase you decided to select files from already added torrent. "
+            + "This command mainly for selection incase you decided to select files from already added torrent/nzb. "
             + "But you can always use /cmd with arg `s` to select files before download start."
         )
         await send_message(message, msg)
         return
 
-    if user_id not in (Config.OWNER_ID, task.listener.user_id) and (
-        user_id not in user_data or not user_data[user_id].get("SUDO")
+    if (
+        Config.OWNER_ID != user_id
+        and task.listener.user_id != user_id
+        and (user_id not in user_data or not user_data[user_id].get("SUDO"))
     ):
         await send_message(message, "This task is not for you!")
         return
@@ -55,7 +64,7 @@ async def select(_, message):
     ]:
         await send_message(
             message,
-            "Task should be in download or pause (incase message deleted by wrong) or queued status (incase you have used torrent file)!",
+            "Task should be in download or pause (incase message deleted by wrong) or queued status (incase you have used torrent or nzb file)!",
         )
         return
     if task.name().startswith("[METADATA]") or task.name().startswith("Trying"):
@@ -66,7 +75,9 @@ async def select(_, message):
         if not task.queued:
             await task.update()
             id_ = task.gid()
-            if task.listener.is_qbit:
+            if task.listener.is_nzb:
+                await sabnzbd_client.pause_job(id_)
+            elif task.listener.is_qbit:
                 id_ = task.hash()
                 await TorrentManager.qbittorrent.torrents.stop([id_])
             else:
@@ -74,11 +85,11 @@ async def select(_, message):
                     await TorrentManager.aria2.forcePause(id_)
                 except Exception as e:
                     LOGGER.error(
-                        f"{e} Error in pause, this mostly happens after abuse aria2",
+                        f"{e} Error in pause, this mostly happens after abuse aria2"
                     )
         task.listener.select = True
-    except Exception:
-        await send_message(message, "This is not a bittorrent task!")
+    except:
+        await send_message(message, "This is not a bittorrent or sabnzbd task!")
         return
 
     SBUTTONS = bt_selection_buttons(id_)
@@ -130,8 +141,10 @@ async def confirm_selection(_, query):
                         await TorrentManager.aria2.unpause(id_)
                     except Exception as e:
                         LOGGER.error(
-                            f"{e} Error in resume, this mostly happens after abuse aria2. Try to use select cmd again!",
+                            f"{e} Error in resume, this mostly happens after abuse aria2. Try to use select cmd again!"
                         )
+        elif task.listener.is_nzb:
+            await sabnzbd_client.resume_job(id_)
         await send_status_message(message)
         await delete_message(message)
     else:
