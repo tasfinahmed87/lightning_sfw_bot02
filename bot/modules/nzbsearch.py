@@ -39,9 +39,7 @@ async def hydra_search(client, message):
         buttons.url_button("Results", page_url)
         button = buttons.build_menu()
         await edit_message(
-            message,
-            f"Search results for '{query}' are available here",
-            button,
+            message, f"Search results for '{query}' are available here", button
         )
     except Exception as e:
         LOGGER.error(f"Error in hydra_search: {e!s}")
@@ -60,22 +58,9 @@ async def search_nzbhydra(query, limit=100):
         "limit": limit,
     }
 
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Accept": "application/xml, text/xml, */*",
-        "Accept-Language": "en-US,en;q=0.9",
-        "Accept-Encoding": "gzip, deflate, br",
-        "Connection": "keep-alive",
-        "Cache-Control": "no-cache",
-        "Pragma": "no-cache",
-        "DNT": "1",
-    }
-
     async with aiohttp.ClientSession() as session:
         try:
-            async with session.get(
-                search_url, params=params, headers=headers, ssl=False
-            ) as response:
+            async with session.get(search_url, params=params) as response:
                 if response.status == 200:
                     content = await response.text()
                     root = ET.fromstring(content)
@@ -84,10 +69,6 @@ async def search_nzbhydra(query, limit=100):
                 LOGGER.error(
                     f"Failed to search NZBHydra. Status Code: {response.status}"
                 )
-                if response.status == 403:
-                    LOGGER.error(
-                        "Access forbidden. Please check your API key and permissions."
-                    )
                 return None
         except ET.ParseError:
             LOGGER.error("Failed to parse the XML response.")
