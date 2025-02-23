@@ -39,7 +39,9 @@ async def hydra_search(client, message):
         buttons.url_button("Results", page_url)
         button = buttons.build_menu()
         await edit_message(
-            message, f"Search results for '{query}' are available here", button
+            message,
+            f"Search results for '{query}' are available here",
+            button,
         )
     except Exception as e:
         LOGGER.error(f"Error in hydra_search: {e!s}")
@@ -67,7 +69,7 @@ async def search_nzbhydra(query, limit=100):
                     return root.findall(".//item")
 
                 LOGGER.error(
-                    f"Failed to search NZBHydra. Status Code: {response.status}"
+                    f"Failed to search NZBHydra. Status Code: {response.status}",
                 )
                 return None
         except ET.ParseError:
