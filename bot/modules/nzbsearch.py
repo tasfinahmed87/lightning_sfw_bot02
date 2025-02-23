@@ -60,18 +60,34 @@ async def search_nzbhydra(query, limit=100):
         "limit": limit,
     }
 
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "application/xml, text/xml, */*",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Connection": "keep-alive",
+        "Cache-Control": "no-cache",
+        "Pragma": "no-cache",
+        "DNT": "1"
+    }
+
     async with aiohttp.ClientSession() as session:
-        async with session.get(search_url, params=params) as response:
-            if response.status == 200:
-                try:
+        try:
+            async with session.get(search_url, params=params, headers=headers, ssl=False) as response:
+                if response.status == 200:
                     content = await response.text()
                     root = ET.fromstring(content)
                     return root.findall(".//item")
-                except ET.ParseError:
-                    LOGGER.info("Failed to parse the XML response.")
-                    return None
-
-            LOGGER.info(f"Failed to search NZBHydra. Status Code: {response.status}")
+                
+                LOGGER.error(f"Failed to search NZBHydra. Status Code: {response.status}")
+                if response.status == 403:
+                    LOGGER.error("Access forbidden. Please check your API key and permissions.")
+                return None
+        except ET.ParseError:
+            LOGGER.error("Failed to parse the XML response.")
+            return None
+        except Exception as e:
+            LOGGER.error(f"Error in search_nzbhydra: {str(e)}")
             return None
 
 
