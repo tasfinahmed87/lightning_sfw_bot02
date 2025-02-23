@@ -139,8 +139,8 @@ async def create_telegraph_page(query, items):
 
         content += (
             f"{idx}. {icon} <b>Title:</b> {title}<br>"
-            f"🔗 <b>Download URL:</b> <code>{download_url}</code><br>"
-            f"💾 <b>Size:</b> {size}<br>"
+            f"<b><a href='{download_url}'>Download URL</a></b> <a href='http://t.me/share/url?url={download_url}'>Share Download URL</a><br>"
+            f"<b>Size:</b> {size}<br>"
             f"━━━━━━━━━━━━━━━━━━━━━━<br><br>"
         )
 
