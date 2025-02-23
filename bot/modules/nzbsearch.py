@@ -1,13 +1,14 @@
-import os
-import aiohttp
 import xml.etree.ElementTree as ET
 
-from .. import LOGGER
-from ..core.config_manager import Config
-from ..helper.ext_utils.bot_utils import new_task
-from ..helper.ext_utils.telegraph_helper import telegraph
-from ..helper.telegram_helper.button_build import ButtonMaker
-from ..helper.telegram_helper.message_utils import edit_message, send_message
+import aiohttp
+
+from bot import LOGGER
+from bot.core.config_manager import Config
+from bot.helper.ext_utils.bot_utils import new_task
+from bot.helper.ext_utils.telegraph_helper import telegraph
+from bot.helper.telegram_helper.button_build import ButtonMaker
+from bot.helper.telegram_helper.message_utils import edit_message, send_message
+
 
 @new_task
 async def hydra_search(client, message):
@@ -17,10 +18,13 @@ async def hydra_search(client, message):
     key = message.text.split()
 
     if len(key) == 1:
-        await send_message(message, "Please provide a search query. Example: `/nzbsearch movie title`.")
+        await send_message(
+            message,
+            "Please provide a search query. Example: `/nzbsearch movie title`.",
+        )
         return
 
-    query = ' '.join(key[1:]).strip()
+    query = " ".join(key[1:]).strip()
     message = await send_message(message, f"🔍 Searching for '{query}'...")
 
     try:
@@ -34,10 +38,13 @@ async def hydra_search(client, message):
         buttons = ButtonMaker()
         buttons.url_button("Results", page_url)
         button = buttons.build_menu()
-        await edit_message(message, f"Search results for '{query}' are available here", button)
+        await edit_message(
+            message, f"Search results for '{query}' are available here", button
+        )
     except Exception as e:
-        LOGGER.error(f"Error in hydra_search: {str(e)}")
+        LOGGER.error(f"Error in hydra_search: {e!s}")
         await edit_message(message, "Something went wrong\nUse /shell cat rlog.txt")
+
 
 async def search_nzbhydra(query, limit=100):
     """
@@ -45,28 +52,31 @@ async def search_nzbhydra(query, limit=100):
     """
     search_url = f"{Config.HYDRA_IP}/api"
     params = {
-        'apikey': Config.HYDRA_API_KEY,
-        't': 'search',
-        'q': query,
-        'limit': limit
+        "apikey": Config.HYDRA_API_KEY,
+        "t": "search",
+        "q": query,
+        "limit": limit,
     }
-    
+
     async with aiohttp.ClientSession() as session:
         try:
             async with session.get(search_url, params=params) as response:
                 if response.status == 200:
                     content = await response.text()
                     root = ET.fromstring(content)
-                    return root.findall('.//item')
-                
-                LOGGER.error(f"Failed to search NZBHydra. Status Code: {response.status}")
+                    return root.findall(".//item")
+
+                LOGGER.error(
+                    f"Failed to search NZBHydra. Status Code: {response.status}"
+                )
                 return None
         except ET.ParseError:
             LOGGER.error("Failed to parse the XML response.")
             return None
         except Exception as e:
-            LOGGER.error(f"Error in search_nzbhydra: {str(e)}")
+            LOGGER.error(f"Error in search_nzbhydra: {e!s}")
             return None
+
 
 async def create_telegraph_page(query, items):
     """
@@ -74,30 +84,50 @@ async def create_telegraph_page(query, items):
     """
     content = "<b>🔍 Search Results:</b><br><br>"
     sorted_items = sorted(
-        [(int(item.find('size').text) if item.find('size') is not None else 0, item) for item in items[:100]],
-        reverse=True, key=lambda x: x[0]
+        [
+            (
+                int(item.find("size").text) if item.find("size") is not None else 0,
+                item,
+            )
+            for item in items[:100]
+        ],
+        reverse=True,
+        key=lambda x: x[0],
     )
-    
+
     for idx, (size_bytes, item) in enumerate(sorted_items, 1):
-        title = item.find('title').text if item.find('title') is not None else 'No Title Available'
-        download_url = item.find('link').text if item.find('link') is not None else 'No Link Available'
+        title = (
+            item.find("title").text
+            if item.find("title") is not None
+            else "No Title Available"
+        )
+        download_url = (
+            item.find("link").text
+            if item.find("link") is not None
+            else "No Link Available"
+        )
         size = format_size(size_bytes)
-        
+
         # Add category-based icons
         title_lower = title.lower()
-        if any(word in title_lower for word in ['movie', 'movies', '1080p', '720p', '2160p', 'uhd']):
-            icon = '🎬'
-        elif any(word in title_lower for word in ['episode', 'season', 'tv', 'show']):
-            icon = '📺'
-        elif any(word in title_lower for word in ['mp3', 'flac', 'music', 'album']):
-            icon = '🎵'
-        elif any(word in title_lower for word in ['ebook', 'book', 'pdf', 'epub']):
-            icon = '📚'
-        elif any(word in title_lower for word in ['game', 'ps4', 'xbox']):
-            icon = '🎮'
+        if any(
+            word in title_lower
+            for word in ["movie", "movies", "1080p", "720p", "2160p", "uhd"]
+        ):
+            icon = "🎬"
+        elif any(
+            word in title_lower for word in ["episode", "season", "tv", "show"]
+        ):
+            icon = "📺"
+        elif any(word in title_lower for word in ["mp3", "flac", "music", "album"]):
+            icon = "🎵"
+        elif any(word in title_lower for word in ["ebook", "book", "pdf", "epub"]):
+            icon = "📚"
+        elif any(word in title_lower for word in ["game", "ps4", "xbox"]):
+            icon = "🎮"
         else:
-            icon = '📁'
-            
+            icon = "📁"
+
         content += (
             f"{idx}. {icon} <b>Title:</b> {title}<br>"
             f"🔗 <b>Download URL:</b> <code>{download_url}</code><br>"
@@ -107,17 +137,18 @@ async def create_telegraph_page(query, items):
 
     response = await telegraph.create_page(
         title=f"🔍 Search Results for '{query}'",
-        content=content
+        content=content,
     )
     LOGGER.info(f"Telegraph page created for search: {query}")
     return f"https://telegra.ph/{response['path']}"
+
 
 def format_size(size_bytes):
     """
     Formats byte size to human readable format
     """
     size_bytes = float(size_bytes)
-    for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
+    for unit in ["B", "KB", "MB", "GB", "TB"]:
         if size_bytes < 1024:
             return f"{size_bytes:.2f} {unit}"
         size_bytes /= 1024

@@ -73,7 +73,6 @@ class Config:
     HYDRA_IP: str = ""
     HYDRA_API_KEY: str = ""
 
-
     @classmethod
     def get(cls, key):
         return getattr(cls, key) if hasattr(cls, key) else None

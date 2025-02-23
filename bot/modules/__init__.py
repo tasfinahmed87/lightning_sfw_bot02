@@ -19,13 +19,13 @@ from .mirror_leech import (
     nzb_leech,
     nzb_mirror,
 )
+from .nzbsearch import hydra_search
 from .restart import (
     confirm_restart,
     restart_bot,
     restart_notification,
     restart_sessions,
 )
-from .nzbsearch import hydra_search
 from .rss import get_rss_menu, rss_listener
 from .search import initiate_search_tools, torrent_search, torrent_search_update
 from .services import aeon_callback, log, ping, start
