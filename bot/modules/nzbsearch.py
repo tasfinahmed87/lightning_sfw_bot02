@@ -61,12 +61,14 @@ async def search_nzbhydra(query, limit=100):
     }
 
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
     }
 
     async with aiohttp.ClientSession() as session:
         try:
-            async with session.get(search_url, params=params, headers=headers) as response:
+            async with session.get(
+                search_url, params=params, headers=headers
+            ) as response:
                 if response.status == 200:
                     content = await response.text()
                     root = ET.fromstring(content)
