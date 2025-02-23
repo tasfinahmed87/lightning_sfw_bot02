@@ -67,7 +67,9 @@ async def search_nzbhydra(query, limit=100):
     async with aiohttp.ClientSession() as session:
         try:
             async with session.get(
-                search_url, params=params, headers=headers
+                search_url,
+                params=params,
+                headers=headers,
             ) as response:
                 if response.status == 200:
                     content = await response.text()
