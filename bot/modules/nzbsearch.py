@@ -59,22 +59,17 @@ async def search_nzbhydra(query, limit=100):
     }
 
     async with aiohttp.ClientSession() as session:
-        try:
-            async with session.get(search_url, params=params) as response:
-                if response.status == 200:
+        async with session.get(search_url, params=params) as response:
+            if response.status == 200:
+                try:
                     content = await response.text()
                     root = ET.fromstring(content)
-                    return root.findall(".//item")
-
-                LOGGER.error(
-                    f"Failed to search NZBHydra. Status Code: {response.status}"
-                )
-                return None
-        except ET.ParseError:
-            LOGGER.error("Failed to parse the XML response.")
-            return None
-        except Exception as e:
-            LOGGER.error(f"Error in search_nzbhydra: {e!s}")
+                    return root.findall('.//item')
+                except ET.ParseError:
+                    LOGGER.info("Failed to parse the XML response.")
+                    return None
+            
+            LOGGER.info(f"Failed to search NZBHydra. Status Code: {response.status}")
             return None
 
 
