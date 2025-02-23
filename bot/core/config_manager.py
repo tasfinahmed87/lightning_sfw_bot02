@@ -70,6 +70,9 @@ class Config:
     FSUB_IDS: str = ""
     LOG_CHAT_ID: int = 0
     LEECH_FILENAME_CAPTION: str = ""
+    HYDRA_IP: str = ""
+    HYDRA_API_KEY: str = ""
+
 
     @classmethod
     def get(cls, key):

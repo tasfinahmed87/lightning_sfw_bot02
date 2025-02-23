@@ -25,6 +25,7 @@ from .restart import (
     restart_notification,
     restart_sessions,
 )
+from .nzbsearch import hydra_search
 from .rss import get_rss_menu, rss_listener
 from .search import initiate_search_tools, torrent_search, torrent_search_update
 from .services import aeon_callback, log, ping, start
@@ -65,6 +66,7 @@ __all__ = [
     "get_packages_version",
     "get_rss_menu",
     "get_users_settings",
+    "hydra_search",
     "initiate_search_tools",
     "jd_leech",
     "jd_mirror",
