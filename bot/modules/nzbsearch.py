@@ -48,7 +48,7 @@ async def hydra_search(client, message):
         await edit_message(message, "Something went wrong\nUse /shell cat rlog.txt")
 
 
-async def search_nzbhydra(query, limit=100):
+async def search_nzbhydra(query, limit=50):
     """
     Performs the actual search query to NZBHydra
     """
