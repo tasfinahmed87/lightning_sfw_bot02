@@ -4,7 +4,7 @@ from asyncio import gather
 from pyrogram.types import BotCommand
 
 from . import LOGGER, bot_loop
-from .core.config_manager import Config, SystemEnv
+from .core.config_manager import Config
 
 # Initialize Configurations
 LOGGER.info("Loading config...")

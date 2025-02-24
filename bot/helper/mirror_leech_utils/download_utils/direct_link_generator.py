@@ -1928,18 +1928,19 @@ def swisstransfer(link):
         "header": "User-Agent:Mozilla/5.0",
     }
 
+
 def megaup(url):
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
-    
+
     response = get(url, headers=headers)
     if response.status_code == 200:
         urls = findall(r'href=["\'](https?://[^\s"\'<>]+)', response.text)
-        
+
         # Filter only download URLs
         download_links = [link for link in urls if "download.megaup.net" in link]
-        
+
         return download_links[0]
     else:
         # print(f"Failed to fetch the webpage, status code: {response.status_code}")

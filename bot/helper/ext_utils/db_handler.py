@@ -98,13 +98,17 @@ class DbManager:
             async with aiopen(path, "rb+") as pf:
                 pf_bin = await pf.read()
             await self.db.settings.files.update_one(
-                {"_id": TgClient.ID}, {"$set": {db_path: pf_bin}}, upsert=True
+                {"_id": TgClient.ID},
+                {"$set": {db_path: pf_bin}},
+                upsert=True,
             )
             if path == "config.py":
                 await self.update_deploy_config()
         else:
             await self.db.settings.files.update_one(
-                {"_id": TgClient.ID}, {"$unset": {db_path: ""}}, upsert=True
+                {"_id": TgClient.ID},
+                {"$unset": {db_path: ""}},
+                upsert=True,
             )
 
     async def update_nzb_config(self):
