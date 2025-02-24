@@ -150,8 +150,9 @@ class Config:
                         value = []
                 setattr(cls, key, value)
 
+class SystemEnv:
     @classmethod
-    def env_load(cls):
+    def load(cls):
         config_vars = Config.get_all()
         for key in config_vars:
             env_value = os.getenv(key)
