@@ -9,7 +9,7 @@ from .core.config_manager import Config, SystemEnv
 # Initialize Configurations
 LOGGER.info("Loading config...")
 Config.load()
-SystemEnv.load()
+Config.env_load()
 
 from .core.startup import load_settings
 
@@ -24,6 +24,8 @@ COMMANDS = {
     "LeechCommand": "- Start leeching",
     "JdMirrorCommand": "- Mirror using Jdownloader",
     "JdLeechCommand": "- Leech using jdownloader",
+    "NzbMirrorCommand": "- Mirror nzb files",
+    "NzbLeechCommand": "- Leech nzb files",
     "YtdlCommand": "- Mirror yt-dlp supported link",
     "YtdlLeechCommand": "- Leech through yt-dlp supported link",
     "CloneCommand": "- Copy file/folder to Drive",

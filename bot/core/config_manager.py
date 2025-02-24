@@ -46,18 +46,18 @@ class Config:
     SUDO_USERS: str = ""
     TELEGRAM_API: int = 0
     TELEGRAM_HASH: str = ""
-    TG_PROXY = None
+    TG_PROXY: dict | None = None
     THUMBNAIL_LAYOUT: str = ""
     TORRENT_TIMEOUT: int = 0
-    UPLOAD_PATHS = {}
+    UPLOAD_PATHS: dict = {}
     UPSTREAM_REPO: str = ""
-    USENET_SERVERS = []
+    USENET_SERVERS: list = []
     UPSTREAM_BRANCH: str = "main"
     USER_SESSION_STRING: str = ""
     USER_TRANSMISSION: bool = False
     USE_SERVICE_ACCOUNTS: bool = False
     WEB_PINCODE: bool = False
-    YT_DLP_OPTIONS: str = {}
+    YT_DLP_OPTIONS: dict = {}
 
     # INKYPINKY
     METADATA_KEY: str = ""
@@ -150,10 +150,8 @@ class Config:
                         value = []
                 setattr(cls, key, value)
 
-
-class SystemEnv:
     @classmethod
-    def load(cls):
+    def env_load(cls):
         config_vars = Config.get_all()
         for key in config_vars:
             env_value = os.getenv(key)
