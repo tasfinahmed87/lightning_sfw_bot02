@@ -150,6 +150,7 @@ class Config:
                         value = []
                 setattr(cls, key, value)
 
+
 class SystemEnv:
     @classmethod
     def load(cls):
