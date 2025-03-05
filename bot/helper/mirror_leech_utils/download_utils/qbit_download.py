@@ -1,4 +1,4 @@
-from asyncio import TimeoutError, sleep
+from asyncio import sleep
 
 from aiofiles import open as aiopen
 from aiofiles.os import path as aiopath

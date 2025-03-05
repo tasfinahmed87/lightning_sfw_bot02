@@ -1,5 +1,5 @@
 import contextlib
-from asyncio import TimeoutError, gather
+from asyncio import gather
 from inspect import iscoroutinefunction
 from pathlib import Path
 

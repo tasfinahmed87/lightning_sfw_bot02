@@ -155,7 +155,11 @@ async def send_rss(text, chat_id, thread_id):
 
 async def delete_message(*args):
     msgs = [msg.delete() for msg in args if msg]
-    await gather(*msgs, return_exceptions=True)
+    results = await gather(*msgs, return_exceptions=True)
+
+    for msg, result in zip(args, results, strict=False):
+        if isinstance(result, Exception):
+            LOGGER.error(f"Failed to delete message {msg}: {result}", exc_info=True)
 
 
 async def delete_links(message):

@@ -1,4 +1,5 @@
-from asyncio import gather, sleep
+# ruff: noqa: RUF006
+from asyncio import create_task, gather, sleep
 from html import escape
 
 from aiofiles.os import listdir, makedirs, remove
@@ -64,8 +65,8 @@ class TaskListener(TaskConfig):
                     intvl.cancel()
             intervals["status"].clear()
             await gather(TorrentManager.aria2.purgeDownloadResult(), delete_status())
-        except Exception:
-            pass
+        except Exception as e:
+            LOGGER.error(e)
 
     def clear(self):
         self.subname = ""
@@ -395,7 +396,7 @@ class TaskListener(TaskConfig):
                         )
                         if Config.LOG_CHAT_ID:
                             await send_message(
-                                Config.LOG_CHAT_ID,
+                                int(Config.LOG_CHAT_ID),
                                 f"{msg}<blockquote expandable>{fmsg}</blockquote>",
                             )
                         await sleep(1)
@@ -407,7 +408,7 @@ class TaskListener(TaskConfig):
                     )
                     if Config.LOG_CHAT_ID:
                         await send_message(
-                            Config.LOG_CHAT_ID,
+                            int(Config.LOG_CHAT_ID),
                             f"{msg}<blockquote expandable>{fmsg}</blockquote>",
                         )
                 await send_message(self.message, done_msg)
@@ -450,7 +451,7 @@ class TaskListener(TaskConfig):
             msg += f"\n\n<b>cc: </b>{self.tag}"
             await send_message(self.user_id, msg, button)
             if Config.LOG_CHAT_ID:
-                await send_message(Config.LOG_CHAT_ID, msg, button)
+                await send_message(int(Config.LOG_CHAT_ID), msg, button)
             await send_message(self.message, done_msg)
         if self.seed:
             await clean_target(self.up_dir)
@@ -483,7 +484,7 @@ class TaskListener(TaskConfig):
         await self.remove_from_same_dir()
         msg = f"{self.tag} Download: {escape(str(error))}"
         x = await send_message(self.message, msg, button)
-        await auto_delete_message(x, time=300)
+        create_task(auto_delete_message(x, time=300))
         if count == 0:
             await self.clean()
         else:
@@ -522,7 +523,7 @@ class TaskListener(TaskConfig):
                 del task_dict[self.mid]
             count = len(task_dict)
         x = await send_message(self.message, f"{self.tag} {escape(str(error))}")
-        await auto_delete_message(x, time=300)
+        create_task(auto_delete_message(x, time=300))
         if count == 0:
             await self.clean()
         else:

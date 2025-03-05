@@ -1,4 +1,3 @@
-from asyncio import TimeoutError
 from base64 import b64encode
 
 from aiofiles import open as aiopen

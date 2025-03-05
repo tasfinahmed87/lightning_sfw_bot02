@@ -202,6 +202,7 @@ async def get_video_thumbnail(video_file, duration):
     output_dir = f"{DOWNLOAD_DIR}thumbnails"
     await makedirs(output_dir, exist_ok=True)
     output = ospath.join(output_dir, f"{time()}.jpg")
+
     if duration is None:
         duration = (await get_media_info(video_file))[0]
     if duration == 0:
@@ -217,13 +218,13 @@ async def get_video_thumbnail(video_file, duration):
         "-i",
         video_file,
         "-vf",
-        "thumbnail",
+        "scale=640:-1",
         "-q:v",
-        "1",
-        "-frames:v",
+        "5",
+        "-vframes",
         "1",
         "-threads",
-        f"{max(1, cpu_no // 2)}",
+        "1",
         output,
     ]
     try:
